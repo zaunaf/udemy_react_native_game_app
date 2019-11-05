@@ -6,7 +6,8 @@ import {
     TextInput,
     Button,
     TouchableWithoutFeedback,
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -31,6 +32,11 @@ const StartGameScreen = props => {
     const confirmInputHandler = () => {
         const chosenNumber = parseInt(enteredValue);
         if (chosenNumber === NaN || chosenNumber <=0 || chosenNumber > 99) {
+            Alert.alert(
+                'Error', 
+                'Mohon isi hanya angka antara 1-99', 
+                [{text: 'OK', style: 'destructive', onPress: resetInputHandler}]
+            );
             return;
         }
         setConfirmed(true);
