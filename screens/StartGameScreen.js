@@ -13,6 +13,7 @@ import {
 import Card from '../components/Card';
 import Colors from '../constants/colors';
 import Input from '../components/Input';
+import NumberContainer from '../components/NumberContainer';
 
 const StartGameScreen = props => {
     
@@ -31,7 +32,7 @@ const StartGameScreen = props => {
 
     const confirmInputHandler = () => {
         const chosenNumber = parseInt(enteredValue);
-        if (chosenNumber === NaN || chosenNumber <=0 || chosenNumber > 99) {
+        if (isNaN(chosenNumber) || chosenNumber <=0 || chosenNumber > 99) {
             Alert.alert(
                 'Error', 
                 'Mohon isi hanya angka antara 1-99', 
@@ -46,7 +47,13 @@ const StartGameScreen = props => {
 
     let confirmedOutput;
     if (confirmed) {
-        confirmedOutput = <Text style={{marginTop: 10}}>Chosen Number: {selectedNumber}</Text>
+        confirmedOutput = (
+            <Card style={styles.summaryContainer}>
+                <Text>You selected</Text>
+                <NumberContainer>{selectedNumber}</NumberContainer>
+                <Button title="Start Game"/>
+            </Card>
+        );
     }
 
     return(
@@ -75,8 +82,8 @@ const StartGameScreen = props => {
                             <Button title="Confirm" onPress={() => { confirmInputHandler(); }} color={Colors.primary}/>
                         </View>
                     </View>
-                </Card>
-                {confirmedOutput}
+                </Card>                
+                {confirmedOutput}                
             </View>
         </TouchableWithoutFeedback>
     )
@@ -110,6 +117,10 @@ const styles = StyleSheet.create({
     input: {
         width: 50,
         textAlign: 'center'
+    },
+    summaryContainer: {        
+        marginTop: 30,
+        alignItems: 'center'
     }
 });
 
