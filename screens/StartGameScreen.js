@@ -71,7 +71,7 @@ const StartGameScreen = props => {
                         style={styles.input} 
                         blurOnSubmit 
                         autoCapitalize="none" 
-                        autoCorrect={false} 
+                        autoCorrect={false}
                         keyboardType="numeric" 
                         maxLength={2}
                         onChangeText={numberInputHandler}
