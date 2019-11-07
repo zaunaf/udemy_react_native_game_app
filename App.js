@@ -1,18 +1,43 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
 import Header from './components/Header';
 import StartGameScreen from './screens/StartGameScreen';
 import GameScreen from './screens/GameScreen';
 import GameOverScreen from './screens/GameOverScreen';
+import * as Font from 'expo-font';
+import { AppLoading } from 'expo';
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+  });
+}
 
 export default function App() {
   
+  // User choiced number
   const [userNumber, setUserNumber ] = useState();
   
   // Number of rounds it takes to finish. Set this when the game is over
   // Starting state is 0, game hasn't started
   // If the state changes to anything above 0 (depends on how many rounds it took for the game to finish), it's game over
   const [guessRounds, setGuessRounds] = useState(0);
+
+  // Loading
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+
+  if (!assetsLoaded) {
+    return (
+      <AppLoading
+          startAsync={fetchFonts} 
+          onFinish={() => setAssetsLoaded(true)} 
+          onError={()=> console.log(err)}
+      />
+    );
+  }
+
 
   // To enable game reset
   const configureNewGameHandler = () => {
