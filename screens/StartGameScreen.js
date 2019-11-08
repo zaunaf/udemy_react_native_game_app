@@ -62,7 +62,7 @@ const StartGameScreen = props => {
         );
     }
 
-    return(
+    return (
         <TouchableWithoutFeedback onPress={()=>{
             Keyboard.dismiss();
         }}>
