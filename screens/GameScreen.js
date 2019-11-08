@@ -22,15 +22,18 @@ const  GameScreen = props => {
 
     // Initial Guess, refreshed each time state changed
     const initalGuess = generateRandomBetween(1, 100, props.userChoice);
-    // UI State for Current Guess
+    
+    // State management untuk currentGuess yang mengubah UI
     const [currentGuess, setcurrentGuess] = useState(initalGuess);
+    
     // Record past guesses
     const [pastGuesses, setPastGuesses] = useState([initalGuess])
 
     // Game rounds, determining game over. Not needed anymore
     // const [rounds, setRounds] = useState(0);
 
-    // Track last high/low
+    // State management untuk memantau low dan high terbaru
+    // Agar tidak mengakibatkan UI refresh, kita gunakan useRef
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
@@ -49,6 +52,8 @@ const  GameScreen = props => {
         [currentGuess, userChoice, onGameOver]
     );
 
+    // Dipanggil oleh tombol setiap kita menjawab clue
+    // Diberi parameter agar bisa di-reuse untuk kedua tombol
     const nextGuessHandler = direction => {
         if (
             (direction === 'lower' && currentGuess < props.userChoice) || 
