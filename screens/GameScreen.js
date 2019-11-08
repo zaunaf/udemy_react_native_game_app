@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Text, View, StyleSheet, Button, Alert } from 'react-native'
+import { Text, View, StyleSheet, Alert, ScrollView } from 'react-native'
 import NumberContainer from '../components/NumberContainer';
 import Card from '../components/Card';
 import MainButton from '../components/MainButton';
 import { Ionicons } from '@expo/vector-icons';
+import { white } from 'ansi-colors';
 
 
 const generateRandomBetween = (min, max, exclude) => {
@@ -19,13 +20,17 @@ const generateRandomBetween = (min, max, exclude) => {
 
 const  GameScreen = props => {
 
-    const [currentGuess, setcurrentGuess] = useState(
-        generateRandomBetween(1, 100, props.userChoice)
-    );
-    
-    // Game rounds, determining game over
-    const [rounds, setRounds] = useState(0);
+    // Initial Guess, refreshed each time state changed
+    const initalGuess = generateRandomBetween(1, 100, props.userChoice);
+    // UI State for Current Guess
+    const [currentGuess, setcurrentGuess] = useState(initalGuess);
+    // Record past guesses
+    const [pastGuesses, setPastGuesses] = useState([initalGuess])
 
+    // Game rounds, determining game over. Not needed anymore
+    // const [rounds, setRounds] = useState(0);
+
+    // Track last high/low
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
@@ -37,7 +42,7 @@ const  GameScreen = props => {
     // Do the function (in the 1st argument) ...
     useEffect(() => {
         if (currentGuess === userChoice) {
-            onGameOver(rounds);
+            onGameOver(pastGuesses.length);
         }
     }, 
         // ... If any of the following list of vars (in the 2nd argument) changes on re-render
@@ -59,15 +64,29 @@ const  GameScreen = props => {
         }
         
         if (direction === 'lower') {
-            currentHigh.current = currentGuess;            
+            currentHigh.current = currentGuess - 1; // Add this to avoid same upper number twice
         } else {
-            currentLow.current = currentGuess;            
+            currentLow.current = currentGuess + 1;  // Add this to avoid same lower number twice         
         }
         const nextNumber = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess);
         
         setcurrentGuess(nextNumber);
-        setRounds(curRounds => curRounds + 1);
+
+        // Not needed anymore since now we track all guesses each round
+        // setRounds(curRounds => curRounds + 1);
+        
+        // Memasukkan nextNumber ke atas list currentPassGuess
+        // Kenapa nextNumber? Karena currentGuess belum update statenya
+        // dengan sendirinya kita harus membuat initalGuess di awal agar kerekam juga
+        setPastGuesses(currentPassGuess => [nextNumber, ...currentPassGuess] )
     };
+
+    const renderListItem = (value, numOfRound) => (
+        <View key={value} style={styles.listItem}>
+            <Text>#{numOfRound}</Text>
+            <Text>{value}</Text>
+        </View>
+    );
 
     return (
         <View style={styles.screen}>
@@ -80,7 +99,12 @@ const  GameScreen = props => {
                 <MainButton title="GREATER" onPress={nextGuessHandler.bind(this, 'greater')} >
                     <Ionicons name="md-add" size={24} color='white' />
                 </MainButton>
-            </Card>
+            </Card>            
+            <Card style={styles.list}>
+                <ScrollView>
+                    {pastGuesses.map( (guess, index) => renderListItem(guess, pastGuesses.length-index))}
+                </ScrollView>
+            </Card>            
         </View>
     )
     
@@ -99,6 +123,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         width: 300,
         maxWidth: "80%"
+    },
+    list: {
+        flex: 1,            // Mandatory in android to have the nested scrollview works as needed
+        width: 300,
+        marginVertical: 20
+    },
+    listItem: {
+        borderColor: '#ccc',
+        borderWidth: 1,
+        padding: 15,
+        marginVertical: 5,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     }
 })
 
