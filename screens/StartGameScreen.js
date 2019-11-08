@@ -7,7 +7,8 @@ import {
     Button,
     TouchableWithoutFeedback,
     Keyboard,
-    Alert
+    Alert,
+    Dimensions
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -121,14 +122,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15
     },
     button: {
-        width: 100,
+        // width: 100,
+        width: Dimensions.get('window').width / 4,
         justifyContent:'center'
     },
     input: {
         width: 50,
         textAlign: 'center'
     },
-    summaryContainer: {        
+    summaryContainer: {
         marginTop: 30,
         alignItems: 'center'
     }
