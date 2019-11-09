@@ -32,6 +32,23 @@ const  GameScreen = props => {
     // Game rounds, determining game over. Not needed anymore
     // const [rounds, setRounds] = useState(0);
 
+    // State management untuk memantau high. Initialnya height yg sekarang
+    const [height, setHeight] = useState(Dimensions.get('window').height);
+
+    useEffect(() => {
+
+        // The effect to be monitored
+        const updateLayout = () => {
+            setHeight(Dimensions.get('window').height);
+        }
+        Dimensions.addEventListener('change', updateLayout);
+
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout);
+        };
+    });
+
+
     // State management untuk memantau low dan high terbaru
     // Agar tidak mengakibatkan UI refresh, kita gunakan useRef
     const currentLow = useRef(1);
@@ -93,25 +110,52 @@ const  GameScreen = props => {
         </View>
     );
 
-    return (
-        <View style={styles.screen}>
-            <Text>Opponent's Guess</Text>
-            <NumberContainer>{currentGuess}</NumberContainer>
-            <Card style={styles.buttonContainer}>                
-                <MainButton title="LOWER" onPress={nextGuessHandler.bind(this, 'lower')} >
-                    <Ionicons name="md-remove" size={24} color='white' />
-                </MainButton>
-                <MainButton title="GREATER" onPress={nextGuessHandler.bind(this, 'greater')} >
-                    <Ionicons name="md-add" size={24} color='white' />
-                </MainButton>
-            </Card>
-            <Card style={styles.list}>
-                <ScrollView>
-                    {pastGuesses.map( (guess, index) => renderListItem(guess, pastGuesses.length-index))}
-                </ScrollView>
-            </Card>            
-        </View>
-    )
+    // Responsive if the height is small change layout
+    if (height < 500) {
+        return (
+            <ScrollView>
+                <View style={styles.screen}>
+                    <Text>Opponent's Guess</Text>                    
+                    <Card style={styles.buttonContainer}>
+                        <MainButton title="LOWER" onPress={nextGuessHandler.bind(this, 'lower')} >
+                            <Ionicons name="md-remove" size={24} color='white' />
+                        </MainButton>
+                        <NumberContainer>{currentGuess}</NumberContainer>
+                        <MainButton title="GREATER" onPress={nextGuessHandler.bind(this, 'greater')} >
+                            <Ionicons name="md-add" size={24} color='white' />
+                        </MainButton>
+                    </Card>
+                    <Card style={styles.list}>
+                        <ScrollView>
+                            {pastGuesses.map((guess, index) => renderListItem(guess, pastGuesses.length - index))}
+                        </ScrollView>
+                    </Card>
+                </View>
+            </ScrollView>
+        )
+    } else {
+        return (
+            <ScrollView>
+                <View style={styles.screen}>
+                    <Text>Opponent's Guess</Text>
+                    <NumberContainer>{currentGuess}</NumberContainer>
+                    <Card style={styles.buttonContainer}>
+                        <MainButton title="LOWER" onPress={nextGuessHandler.bind(this, 'lower')} >
+                            <Ionicons name="md-remove" size={24} color='white' />
+                        </MainButton>
+                        <MainButton title="GREATER" onPress={nextGuessHandler.bind(this, 'greater')} >
+                            <Ionicons name="md-add" size={24} color='white' />
+                        </MainButton>
+                    </Card>
+                    <Card style={styles.list}>
+                        <ScrollView>
+                            {pastGuesses.map((guess, index) => renderListItem(guess, pastGuesses.length - index))}
+                        </ScrollView>
+                    </Card>
+                </View>
+            </ScrollView>
+        ) 
+    }
     
 };
 
@@ -120,15 +164,16 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         padding: 10,
-        alignItems: 'center'
+        alignItems: 'center'        
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: "space-around",
         // marginTop: 20,
         marginTop: Dimensions.get('window').height > 600 ? 20 : 5,
+        alignItems: 'center',
         width: 300,
-        maxWidth: "80%"
+        maxWidth: "80%"        
     },
     list: {
         flex: 1,            // Mandatory in android to have the nested scrollview works as needed
